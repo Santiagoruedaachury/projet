@@ -1,0 +1,323 @@
+<!doctype html>
+<title> Game2 </title>
+
+<button id="Droite">Droite</button>
+<button id="Gauche">Gauche</button>
+
+<style  type="text/css"> 
+canvas{
+border: 1px solid black;
+background-color: aqua;
+
+}
+</style>
+
+<body>
+<canvas>
+
+</canvas>
+
+<script>
+
+var ElementGraphique =
+{
+ Xinitiale: 0,
+ Yinitiale: 0,
+ Linitiale: 517,
+ Hinitiale: 593,
+ x: 0,
+ y: 0,
+ Largeur: 90,
+ Hauteur: 90,
+ rotation: 0,
+ Vx : 0,
+ Vy : 0 
+}; 
+
+var canvas = document.querySelector('canvas');
+console.log(canvas);
+canvas.width = 800;
+canvas.height = 600;
+var SurfaceDuCanvas = canvas.getContext("2d");
+
+
+var Fond = new Image();
+Fond.addEventListener("load", loadHandler, false);
+Fond.src = "XP.png"; 
+
+
+var sprites = [];
+
+var Cerf = Object.create(ElementGraphique);
+Cerf.x = 350;
+Cerf.y = 250;
+sprites.push(Cerf); 
+
+var Photo = new Image();
+Photo.addEventListener("load", loadHandler, false);
+Photo.src = "cerf.png";
+
+var Droite = document.querySelector("#Droite");
+Droite.addEventListener("mousedown", TournerDroite, false);
+
+var Gauche = document.querySelector("#Gauche");
+Gauche.addEventListener("mousedown", TournerGauche, false);
+
+canvas.addEventListener("mousedown", SourisAc, false);
+window.addEventListener("mouseup", SourisDe, false);
+
+
+var Haut = 38;
+var Bas = 40;
+var Droite = 39;
+var Gauche = 37;
+
+
+var EnHaut = false;
+var EnBas = false;
+var ADroite = false;
+var AGauche = false;
+
+
+window.addEventListener("keydown", function(event)
+{
+  switch(event.keyCode)
+  {
+    case Haut:
+	    EnHaut
+     = true;
+	    break;
+	  
+	  case Bas:
+	    EnBas = true;
+	    break;
+	    
+	  case Gauche:
+	    AGauche = true;
+	    break;  
+	    
+	  case Droite:
+	    ADroite = true;
+	    break; 
+  }
+}, false);
+
+window.addEventListener("keyup", function(event)
+{
+  switch(event.keyCode)
+  {
+    case Haut:
+	    EnHaut
+     = false;
+	    break;
+	  
+	  case Bas:
+	    EnBas = false;
+	    break;
+	    
+	  case Gauche:
+	    AGauche = false;
+	    break;  
+	    
+	  case Droite:
+	    ADroite = false;
+	    break; 
+  }
+}, false);
+
+function loadHandler()
+{
+   
+Physique();
+}
+
+function Physique()
+{
+
+ window.requestAnimationFrame(Physique, canvas);
+
+  Cerf.x += Cerf.Vx;
+  Cerf.y += Cerf.Vy; 
+  
+  if(EnHaut
+ && !EnBas)
+  {
+    Cerf.Vy = -5;
+  }
+  //Down
+  if(EnBas && !EnHaut
+)
+  {
+    Cerf.Vy = 5;
+  }
+  //Left
+  if(AGauche && !ADroite)
+  {
+    Cerf.Vx = -5;
+  }
+  //Right
+  if(ADroite && !AGauche)
+  {
+    Cerf.Vx = 5;
+  }
+  
+  if(!EnHaut
+ && !EnBas)
+  {
+    Cerf.Vy = 0;
+  }
+  
+  if(!AGauche && !ADroite)
+  {
+    Cerf.Vx = 0;
+  }
+  	
+ 
+ 
+  if (Cerf.x < 0)
+  {
+    Cerf.x = 0;
+  }
+  if (Cerf.y < 0)
+  {
+    Cerf.y = 0;
+  }
+  if (Cerf.x + Cerf.Largeur > canvas.Largeur)
+  {
+    Cerf.x = canvas.Largeur - Cerf.Largeur;
+  }
+  if (Cerf.y + Cerf.Hauteur > canvas.Hauteur)
+  {
+    Cerf.y = canvas.Hauteur - Cerf.Hauteur;
+  }
+
+  
+ 
+    render2();
+ render();
+ 
+} 
+
+function render()
+{
+
+ SurfaceDuCanvas.clearRect(0, 0, canvas.Largeur, canvas.Hauteur);
+
+
+ if(sprites.length !== 0)
+ {
+ for(var i = 0; i < sprites.length; i++)
+ {
+ var sprite = sprites[i];
+
+ SurfaceDuCanvas.drawImage(Fond
+,0,0);
+
+ SurfaceDuCanvas.save();
+
+
+SurfaceDuCanvas.translate
+(
+  Math.floor(sprite.x + (sprite.Largeur / 2)), 
+  Math.floor(sprite.y + (sprite.Largeur / 2))
+);
+
+SurfaceDuCanvas.rotate(sprite.rotation * Math.PI / 180);
+
+
+SurfaceDuCanvas.drawImage
+  (
+    Photo, 
+    sprite.Xinitiale, sprite.Yinitiale, 
+    sprite.Linitiale, sprite.Hinitiale,
+    Math.floor(-sprite.Largeur / 2), Math.floor(-sprite.Hauteur / 2), 
+    sprite.Largeur, sprite.Hauteur
+  );
+
+  
+
+SurfaceDuCanvas.restore();
+
+
+ }
+ }
+} 
+
+
+function render2()
+{ 
+  
+  SurfaceDuCanvas.clearRect(0, 0, canvas.Largeur, canvas.Hauteur);
+  
+  if(sprites.length !== 0)
+  {
+    for(var i = 0; i < sprites.length; i++)
+    {
+      var sprite = sprites[i];
+      SurfaceDuCanvas.drawImage
+      (
+        Photo, 
+        sprite.Xinitiale, sprite.Yinitiale, 
+        sprite.Linitiale, sprite.Hinitiale,
+        Math.floor(sprite.x), Math.floor(sprite.y), 
+        sprite.Largeur, sprite.Hauteur
+      ); 
+    }
+  }
+}
+
+function TournerDroite(event)
+{
+  Cerf.rotation += 10;
+}
+
+function TournerGauche(event)
+{
+  Cerf.rotation -= 10;
+}
+
+function SourisAc(event)
+{ 
+
+  var SourisX = event.pageX - canvas.offsetLeft;
+  var SourisY = event.pageY - canvas.offsetTop;
+    
+  
+  var Gauche = Cerf.x;
+  var Droite = Cerf.x + Cerf.Largeur;
+  var Haut = Cerf.y;
+  var Bas = Cerf.y + Cerf.Hauteur;
+  
+  if(SourisX < Gauche)
+  {
+    Cerf.Vx -= 20;
+  }
+  if(SourisX > Droite)
+  {
+    Cerf.Vx += 20;
+  }
+  if(SourisY < Haut)
+  {
+    Cerf.Vy -= 20;
+  }
+  if(SourisY > Bas)
+  {
+    Cerf.Vy += 20;
+  }
+}
+
+function SourisDe(event)
+{ 
+  Cerf.Vx = 0; 
+  Cerf.Vy = 0;
+}
+
+function addition(Premierchiffre,deuxiemechiffre)
+
+{
+    var Somme = (Premierchiffre + deuxiemechiffre);   
+        return(Somme);
+}
+
+</script>
+</body>
